@@ -19,7 +19,7 @@ var (
 // Output as TSV
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "%s: Benchmark performance of prime algorithms.", os.Args[0])
+		fmt.Fprintf(os.Stderr, "%s: Benchmark performance of prime algorithms.\nUsage:\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 	flag.Parse()
