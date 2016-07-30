@@ -18,7 +18,7 @@ func (p *simpleErat) PrimesUpTo(n int, out chan<- int) {
 		close(out)
 	}
 
-	composite := make([]bool, n + 1)
+	composite := make([]bool, n+1)
 	for i := 2; i <= n; i++ {
 		if composite[i] {
 			continue
@@ -38,7 +38,7 @@ func (p *simpleErat) IsPrime(n int) bool {
 	if n <= 1 {
 		return false
 	}
-	composite := make([]bool, n + 1)
+	composite := make([]bool, n+1)
 	for i := 2; i <= n; i++ {
 		if composite[i] {
 			continue
@@ -49,5 +49,5 @@ func (p *simpleErat) IsPrime(n int) bool {
 			composite[k] = true
 		}
 	}
-	return ! composite[n]
+	return !composite[n]
 }

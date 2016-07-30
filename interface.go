@@ -1,9 +1,10 @@
 // Prime generator interface.
 package primes
 
-import(
+import (
 	"math"
 )
+
 // TODO use math/big?
 
 // Primer provides functionality around prime numbers.
