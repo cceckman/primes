@@ -12,6 +12,7 @@ import (
 
 var (
 	maxLevel = flag.Int("max_level", 5, "How far to run benchmarks: up to 1..1 with this many zeros in the middle.")
+	// human = flag.Bool("human", false, "Human-formatted output.") // TODO implement.
 	help = flag.Bool("help", false, "Display a usage message.")
 )
 
