@@ -5,6 +5,13 @@ import (
 	"math"
 )
 
+var (
+	Implementations = map[string]Primer{
+		"SimpleErat": &simpleErat{},
+		"Erat2":      &erat2{},
+	}
+)
+
 // TODO use math/big?
 
 // Primer provides functionality around prime numbers.

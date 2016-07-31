@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_prefix", "go_binary", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_prefix", "go_library", "go_test")
 
 package(
     default_visibility = ["//:__subpackages__"],
@@ -10,12 +10,12 @@ go_library(
     name = "go_default_library",
     srcs = [
         "erat.go",
-        "interface.go",
+        "primes.go",
     ],
 )
 
-go_binary(
-    name = "benchmark",
-    srcs = ["main.go"],
-    deps = [":go_default_library"],
+go_test(
+    name = "primes_test",
+    srcs = ["primes_test.go"],
+    library = ":go_default_library",
 )

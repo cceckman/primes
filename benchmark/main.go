@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/cceckman/primes"
+	"github.com/cceckman/primes/primes"
 	"os"
 	"strings"
-	"text/tabwriter"
 	"testing"
+	"text/tabwriter"
 )
 
 var (
@@ -31,17 +31,13 @@ func main() {
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
 
-	evaluators := map[string]primes.Primer{
-		"SimpleErat": primes.SimpleErat(),
-		"Erat2": primes.Erat2(),
-	}
 	levels := levelGen(*maxLevel)
 
 	// Output header
 	fmt.Fprint(w, "Function\tAlgorithm\tParameter\tIterations\tTotal Time (s)\tAverage Time (ns)\tAllocs\tBytes\n")
 
 	// First: bench PrimesUpTo, to get a set of primes to use
-	for name, primer := range evaluators {
+	for name, primer := range primes.Implementations {
 		for _, level := range levels {
 			// create a benchmark that closes over level and primer
 			// Not running in parallel; OK to use those variables

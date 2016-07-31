@@ -6,10 +6,6 @@ var (
 
 // SimpleErat gives a simple / naive Sieve of Eratosthenes solver.
 // It's very very simple- it even starts at 2.
-func SimpleErat() Primer {
-	return &simpleErat{}
-}
-
 type simpleErat struct{}
 
 func (p *simpleErat) PrimesUpTo(n int, out chan<- int) {
@@ -44,7 +40,7 @@ func (p *simpleErat) IsPrime(n int) bool {
 	// It's no more expensive to compute all primes up to n
 	// with a sieve of Eratosthenes, vs. just computing
 	// whether n is prime.
-	go p.PrimesUpTo(n,c)
+	go p.PrimesUpTo(n, c)
 	for p := range c {
 		if p == n {
 			return true
@@ -53,29 +49,31 @@ func (p *simpleErat) IsPrime(n int) bool {
 	return false
 }
 
-func Erat2() Primer {
-	return &erat2{}
-}
-
-// erat is a Sieve of Eratosthenes with some opmtimizations,
+// erat2 is a Sieve of Eratosthenes with some opmtimizations,
 // most notably only looking at odd numbers.
 type erat2 struct{}
+
+func erat2_num(i int) int { return (i * 2) + 1 }
+func erat2_idx(n int) int { return (n - 1) / 2 }
 
 func (p *erat2) PrimesUpTo(n int, out chan<- int) {
 	if n <= 1 {
 		close(out)
 		return
 	}
+	if n == 2 {
+		out <- 2
+		close(out)
+		return
+	}
+	out <- 2
 
 	// In an odds-only slice,
 	// index i refers to the number (i*2)+1;
 	// number n is at index (n-1) / 2
-	num := func(i int) int { return (i * 2) + 1 }
-	idx := func(n int) int { return (n - 1) / 2 }
-
 	// TODO: Upper limit can be optimized to be something to do with sqrt(n).
 	// prime = not-composite, until proven otherwise.
-	composite := make([]bool, idx(n) + 1)
+	composite := make([]bool, erat2_idx(n)+1)
 
 	// Start at index 1 == number 3
 	for i := 1; i < len(composite); i++ {
@@ -83,7 +81,7 @@ func (p *erat2) PrimesUpTo(n int, out chan<- int) {
 			continue
 		}
 		// Found a prime; record it...
-		out <- num(i)
+		out <- erat2_num(i)
 
 		// Perform sieve:
 		// run through multiples of i, marking as composite.
@@ -94,7 +92,7 @@ func (p *erat2) PrimesUpTo(n int, out chan<- int) {
 			// for all K > 2.
 			// But we cut out all even multiples by hopping to k+=2,
 			// TODO optimize this instruction. This is readable, but mathier is probably faster.
-			j := idx(num(i) * k)
+			j := erat2_idx(erat2_num(i) * k)
 			if j >= len(composite) {
 				break
 			}
@@ -109,7 +107,7 @@ func (p *erat2) IsPrime(n int) bool {
 	if n <= 1 {
 		return false
 	}
-	if n % 2 == 0 {
+	if n%2 == 0 {
 		return false
 	}
 
@@ -118,7 +116,7 @@ func (p *erat2) IsPrime(n int) bool {
 	// It's no more expensive to compute all primes up to n
 	// with a sieve of Eratosthenes, vs. just computing
 	// whether n is prime.
-	go p.PrimesUpTo(n,c)
+	go p.PrimesUpTo(n, c)
 	for p := range c {
 		if p == n {
 			return true
