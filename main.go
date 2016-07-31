@@ -28,13 +28,12 @@ func main() {
 		flag.Usage()
 		os.Exit(-1)
 	}
-	// TODO: I should really put all the above in a template for main.go.
-
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
 
 	evaluators := map[string]primes.Primer{
 		"SimpleErat": primes.SimpleErat(),
+		"Erat2": primes.Erat2(),
 	}
 	levels := levelGen(*maxLevel)
 
