@@ -11,6 +11,7 @@ go_library(
     srcs = [
         "erat.go",
         "primes.go",
+        "parrerat.go",
     ],
 )
 

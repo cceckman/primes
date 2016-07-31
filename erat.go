@@ -4,10 +4,6 @@ import (
 	"math"
 )
 
-var (
-	_ Primer = &simpleErat{}
-)
-
 // SimpleErat gives a simple / naive Sieve of Eratosthenes solver.
 // It's very very simple- it even starts at 2.
 type simpleErat struct{}
