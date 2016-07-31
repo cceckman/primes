@@ -14,8 +14,9 @@ go_library(
     ],
 )
 
-go_test(
-    name = "primes_test",
-    srcs = ["primes_test.go"],
-    library = ":go_default_library",
-)
+
+#go_test(
+#    name = "primes_test",
+#    srcs = ["primes_test.go"],
+#    library = ":go_default_library",
+#)
