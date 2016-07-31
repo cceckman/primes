@@ -1,13 +1,11 @@
 Function	Algorithm	Parameter	Iterations	Total Time (s)	Average Time (ns)	Allocs		Bytes
-PrimesUpTo	SimpleErat	101		200000		2.041639021s	10208			     208 B/op	       2 allocs/op
-PrimesUpTo	SimpleErat	1001		20000		1.376107112s	68805			    1120 B/op	       2 allocs/op
-PrimesUpTo	SimpleErat	10001		3000		1.512329862s	504109			   10592 B/op	       2 allocs/op
-PrimesUpTo	SimpleErat	100001		300		1.083532756s	3611775			  106593 B/op	       2 allocs/op
-PrimesUpTo	SimpleErat	1000001		50		1.532507757s	30650155		 1007723 B/op	       3 allocs/op
-PrimesUpTo	SimpleErat	10000001	3		1.039086932s	346362310		10002597 B/op	       8 allocs/op
-PrimesUpTo	Erat2		101		200000		1.874301718s	9371			     160 B/op	       2 allocs/op
-PrimesUpTo	Erat2		1001		20000		1.304361599s	65218			     608 B/op	       2 allocs/op
-PrimesUpTo	Erat2		10001		3000		1.578708412s	526236			    5472 B/op	       2 allocs/op
-PrimesUpTo	Erat2		100001		300		1.306614038s	4355380			   57440 B/op	       2 allocs/op
-PrimesUpTo	Erat2		1000001		30		1.201127171s	40037572		  508006 B/op	       2 allocs/op
-PrimesUpTo	Erat2		10000001	3		1.137225846s	379075282		 5005472 B/op	       8 allocs/op
+PrimesUpTo	SimpleErat	101		200000		2.131196963s	10655			     208 B/op	       2 allocs/op
+PrimesUpTo	SimpleErat	1001		20000		1.320764067s	66038			    1120 B/op	       2 allocs/op
+PrimesUpTo	SimpleErat	10001		3000		1.494564079s	498188			   10592 B/op	       2 allocs/op
+PrimesUpTo	SimpleErat	100001		500		1.968819813s	3937639			  106593 B/op	       2 allocs/op
+PrimesUpTo	SimpleErat	1000001		50		1.729280876s	34585617		 1007729 B/op	       3 allocs/op
+PrimesUpTo	Erat2		101		200000		2.115903949s	10579			     160 B/op	       2 allocs/op
+PrimesUpTo	Erat2		1001		20000		1.317434658s	65871			     608 B/op	       2 allocs/op
+PrimesUpTo	Erat2		10001		3000		1.40369163s	467897			    5472 B/op	       2 allocs/op
+PrimesUpTo	Erat2		100001		500		1.901189273s	3802378			   57440 B/op	       2 allocs/op
+PrimesUpTo	Erat2		1000001		50		1.624618214s	32492364		  508007 B/op	       2 allocs/op
