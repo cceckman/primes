@@ -1,6 +1,7 @@
 package primes
 
 import (
+	"sync"
 	"os"
 	"runtime"
 	"reflect"
@@ -9,10 +10,9 @@ import (
 // ParrErat is a prallelized, segmented Eratosthenes sieve.
 // It must be instantiated with
 // - How big the segments should be, in # of ints. "related to memory" is a good size.
-// - How many workers to run. "Number of cores" is a good size.
+// - How many workers to run. "Number of cores" is a good size... but let's save that for later.
 type parrErat struct{
 	segmentSize uintptr // in # of ints
-	workers int
 }
 
 func NewParrErat() Primer {
@@ -27,8 +27,12 @@ func NewParrErat() Primer {
 	}
 }
 
-func m2_num(i int) int { return (i * 2) + 1 }
-func m2_idx(n int) int { return (n - 1) / 2 }
+func parrerat_num(seg, idx int, segmentSize uintptr) int {
+	return seg * int(segmentSize) + idx
+}
+func parrerat_idx(num int, segmentSize uintptr) (int, int) {
+	return (num / int(segmentSize), num % int(segmentSize))
+}
 
 func (p *parrErat) PrimesUpTo(n int, out chan<- int) {
 	if n <= 1 {
@@ -50,7 +54,31 @@ func (p *parrErat) PrimesUpTo(n int, out chan<- int) {
 		composite[s] = make([]bool, p.segmentSize)
 	}
 
+	// Semaphore for how many workers to have going
+	sem := make(chan bool, p.workers)
+
+	var wg sync.WaitGroup
+
+	// Main loop
 	for i := 2; i < n; i++ {
+		segment, mod := parrerat_idx(i, p.segmentSize)
+		if composite[segment][mod] {
+			continue // Nothing to see here.
+		}
+		out <- i // It's prime! yay!
+
+		segsLeft := nSegments - s
+		wg.Add(segsLeft)
+		for m := s; m < nSegments; m++ {
+			// In parallel per-segment, mark all multiples of i in this segment as composite.
+			// This segment's numbers are modulo segmentSize, starting with segment * segmentSize.
+			go func(m int) {
+
+			}(m)
+		}
+
+		wg.Wait()
+
 	}
 
 	close(out)
