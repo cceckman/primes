@@ -11,6 +11,7 @@ var (
 		"Erat2":      &erat2{},
 		"Erat3":      &erat3{},
 		"Erat4":      &erat4{},
+		"Erat5":      &erat5{},
 	}
 )
 

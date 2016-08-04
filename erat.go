@@ -213,8 +213,6 @@ func (p *erat3) IsPrime(n int) bool {
 // Use the actual values rather than indices for math (hopefully, reduce num ops)
 type erat4 struct{}
 
-func erat4_idx(n int) int { return (n - 1) / 2 }
-
 func (p *erat4) PrimesUpTo(n int, out chan<- int) {
 	if n <= 1 {
 		close(out)
@@ -231,7 +229,7 @@ func (p *erat4) PrimesUpTo(n int, out chan<- int) {
 	// index i refers to the number (i*2)+1;
 	// number n is at index (n-1) / 2
 	// prime = not-composite, until proven otherwise.
-	composite := make([]bool, erat4_idx(n)+1)
+	composite := make([]bool, n / 2 + 1)
 
 	// Only need to look for primes "less than or equal to" sqrt(n)
 	// before assuming all remaining (un-sieved) ones are prime
@@ -260,6 +258,77 @@ func (p *erat4) PrimesUpTo(n int, out chan<- int) {
 }
 
 func (p *erat4) IsPrime(n int) bool {
+	if n <= 1 {
+		return false
+	}
+	if n%2 == 0 {
+		return false
+	}
+
+	c := make(chan int)
+
+	// It's no more expensive to compute all primes up to n
+	// with a sieve of Eratosthenes, vs. just computing
+	// whether n is prime.
+	go p.PrimesUpTo(n, c)
+	for p := range c {
+		if p == n {
+			return true
+		}
+	}
+	return false
+}
+
+// erat5 is like erat4, but also:
+// Starts the sieve (multiples of i) at i^2.
+type erat5 struct{}
+
+func (p *erat5) PrimesUpTo(n int, out chan<- int) {
+	if n <= 1 {
+		close(out)
+		return
+	}
+	if n == 2 {
+		out <- 2
+		close(out)
+		return
+	}
+	out <- 2
+
+	// In an odds-only slice,
+	// index i refers to the number (i*2)+1;
+	// number n is at index (n-1) / 2
+	// prime = not-composite, until proven otherwise.
+	composite := make([]bool, n / 2 + 1)
+
+	// Only need to look for primes "less than or equal to" sqrt(n)
+	// before assuming all remaining (un-sieved) ones are prime
+	sqrt := int(math.Ceil(math.Sqrt(float64(n))))
+
+	// Start at index 1 == number 3
+	for i := 1; i < n; i += 2 {
+		if composite[(i - 1) / 2] { // non-default; has been explicitly set to be composite.
+			continue
+		}
+		// Found a prime; record it...
+		out <- i
+
+		if i > sqrt {
+			// Skip sieving; we've covered all the primes already.
+			continue
+		}
+
+		// run through odd multiples of i, marking as composite.
+		// Start with i * i; lower multiples of i will have already been marked as multiples
+		// of another, smaller prime. Add 2i each time to ignore the even multiples.
+		for j := i * i; j <= n; j += (i + i) {
+			composite[(j - 1) / 2] = true
+		} // end sieve
+	}
+	close(out)
+}
+
+func (p *erat5) IsPrime(n int) bool {
 	if n <= 1 {
 		return false
 	}
