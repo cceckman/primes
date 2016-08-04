@@ -10,6 +10,7 @@ var (
 		"SimpleErat": &simpleErat{},
 		"Erat2":      &erat2{},
 		"Erat3":      &erat3{},
+		"Erat4":      &erat4{},
 	}
 )
 
