@@ -9,6 +9,7 @@ package primes
 
 import(
 	"math"
+	"fmt"
 	"sync"
 	"sync/atomic"
 )
@@ -116,10 +117,11 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 	}
 
 	// In an odds-only slice,
-	// index i refers to the number (i*2)+1 + p.max;
-	// number n is at index (n-1 - p.max) / 2
+	// index i refers to the number (i*2)+1;
+	// number n is at index (n-1) / 2
+	// (We could use less memory by subtracting out p.max.)
 	// prime = not-composite, until proven otherwise.
-	composite := make([]bool, int64(n) / 2 + 1 - p.max)
+	composite := make([]bool, (n / 2) + 1)
 
 	// Only need to look for primes "less than or equal to" sqrt(n)
 	// before assuming all remaining (un-sieved) ones are prime
@@ -136,7 +138,12 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 		factor := (p.max / prime) + 1
 
 		for i := prime * factor; i < sqrt; i += (prime * 2) {
-			composite[(i - 1 - p.max) / 2] = true
+			idx := (i - 1) / 2
+			if idx < 0 || int(idx) >= len(composite) {
+				e := fmt.Errorf("For number %d, got index %d with composite len %d", i, idx, len(composite))
+				panic(e)
+			}
+			composite[(i - 1) / 2] = true
 		}
 	}
 
@@ -157,7 +164,7 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 		// Start with i * i; lower multiples of i will have already been marked as multiples
 		// of another, smaller prime. Add 2i each time to ignore the even multiples.
 		for j := i * i; j <= int64(n); j += (i + i) {
-			composite[(j - 1 - p.max) / 2] = true
+			composite[(j - 1) / 2] = true
 		} // end sieve
 	}
 	// Finally, update max.
