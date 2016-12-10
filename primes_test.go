@@ -22,7 +22,7 @@ var (
 	}
 )
 
-func testPrimesUpTo(t *testing.T) {
+func TestPrimesUpTo(t *testing.T) {
 	max := refPrimes[len(refPrimes)-1]
 	for name, p := range Implementations {
 		got := PrimesUpTo(max, p)
@@ -34,7 +34,7 @@ func testPrimesUpTo(t *testing.T) {
 	}
 }
 
-func testIsPrime(t *testing.T) {
+func TestIsPrime(t *testing.T) {
 	max := refPrimes[len(refPrimes)-1]
 	min := -10
 	pointer := 0 // into refPrimes
