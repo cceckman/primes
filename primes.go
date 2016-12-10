@@ -12,6 +12,7 @@ var (
 		"Erat3":      &erat3{},
 		"Erat4":      &erat4{},
 		"Erat5":      &erat5{},
+		"Memo":				NewMemoizingPrimer(),
 	}
 )
 
