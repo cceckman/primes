@@ -108,6 +108,9 @@ func (p *erat2) IsPrime(n int) bool {
 	if n <= 1 {
 		return false
 	}
+	if n == 2 {
+		return true
+	}
 	if n%2 == 0 {
 		return false
 	}
@@ -191,6 +194,9 @@ func (p *erat3) IsPrime(n int) bool {
 	if n <= 1 {
 		return false
 	}
+	if n == 2 {
+		return true
+	}
 	if n%2 == 0 {
 		return false
 	}
@@ -230,13 +236,13 @@ func (p *erat4) PrimesUpTo(n int, out chan<- int) {
 	// number n is at index (n-1) / 2
 	// prime = not-composite, until proven otherwise.
 	composite := make([]bool, n / 2 + 1)
+	composite[0] = true
 
 	// Only need to look for primes "less than or equal to" sqrt(n)
 	// before assuming all remaining (un-sieved) ones are prime
 	sqrt := int(math.Ceil(math.Sqrt(float64(n))))
 
-	// Start at index 1 == number 3
-	for i := 1; i < n; i += 2 {
+	for i := 1; i <= n; i += 2 {
 		if composite[(i - 1) / 2] { // non-default; has been explicitly set to be composite.
 			continue
 		}
@@ -260,6 +266,9 @@ func (p *erat4) PrimesUpTo(n int, out chan<- int) {
 func (p *erat4) IsPrime(n int) bool {
 	if n <= 1 {
 		return false
+	}
+	if n == 2 {
+		return true
 	}
 	if n%2 == 0 {
 		return false
@@ -300,13 +309,12 @@ func (p *erat5) PrimesUpTo(n int, out chan<- int) {
 	// number n is at index (n-1) / 2
 	// prime = not-composite, until proven otherwise.
 	composite := make([]bool, n / 2 + 1)
+	composite[0] = true  // 1 is, well, not prime.
 
 	// Only need to look for primes "less than or equal to" sqrt(n)
 	// before assuming all remaining (un-sieved) ones are prime
 	sqrt := int(math.Ceil(math.Sqrt(float64(n))))
-
-	// Start at index 1 == number 3
-	for i := 1; i < n; i += 2 {
+	for i := 1; i <= n; i += 2 {
 		if composite[(i - 1) / 2] { // non-default; has been explicitly set to be composite.
 			continue
 		}
@@ -331,6 +339,9 @@ func (p *erat5) PrimesUpTo(n int, out chan<- int) {
 func (p *erat5) IsPrime(n int) bool {
 	if n <= 1 {
 		return false
+	}
+	if n == 2 {
+		return true
 	}
 	if n%2 == 0 {
 		return false

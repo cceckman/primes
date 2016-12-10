@@ -35,7 +35,7 @@ func PrimesUpTo(n int, p Primer) []int {
 	// OK to be only approximate for capacity; append will allocate more if needed.
 	est := n / int(math.Log(float64(n)))
 
-	result := make([]int, est, 0)
+	result := []int{}
 	c := make(chan int, est)
 	// allow buffering within the channel- don't block computation if we can help it.
 	// Not likely, since all we're doing is an append, but whatever.
