@@ -59,12 +59,7 @@ func (p *MemoizingPrimer) IsPrime(n int) bool {
 			backgroundFlush(c)
 			return true
 		}
-		if i > n {
-			backgroundFlush(c)
-			return false
-		}
 	}
-
 
 	/*
 	// Have already computed n; do a binary search.
