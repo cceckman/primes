@@ -9,21 +9,19 @@ package primes
 
 import(
 	"math"
-	"sync"
-	"sync/atomic"
 )
 
 var (
 	_ Primer = NewMemoizingPrimer()
 )
 
-// MemoizingPrimer is threadsafe, remembered Primer.
+// MemoizingPrimer is primer that stores found primes.
+// It is not (yet) threadsafe.
 type MemoizingPrimer struct {
 	// max is the largest number checked for primacy
 	max int64
 	// listing is the list of all primes found below max.
 	listed []int
-	lock sync.RWMutex
 }
 
 func NewMemoizingPrimer() *MemoizingPrimer {
@@ -47,59 +45,30 @@ func (p *MemoizingPrimer) IsPrime(n int) bool {
 		return false
 	}
 
-	// Otherwise, see if we're up to that value yet.
-	//	max := atomic.LoadInt64(&p.max)
-
-	// Need to compute up to and including n; see if it shows up in the result.
-
+	// Iterate through the primes and try to find it.
 	c := make(chan int)
 	p.PrimesUpTo(n, c)
 	for i := range c {
 		if i == n {
+			// Get rid of the rest of the values in the background.
 			backgroundFlush(c)
 			return true
 		}
 	}
 
-	/*
-	// Have already computed n; do a binary search.
-	p.lock.RLock()
-	defer p.lock.RUnlock()
+	// Better way: do a binary search in the list.
+	// Log rather than linear.
 
-	lower, upper := 0, len(p.listed) - 1
-	for {
-		pivot := ((upper - lower) / 2) + lower
-
-		if p.listed[pivot] == n {
-			return true
-		}
-
-		if lower >= upper {
-			break
-		}
-
-		if p.listed[pivot] > n {
-			lower = pivot + 1
-		} else if p.listed[pivot] < n {
-			upper = pivot - 1
-		}
-	}
-	*/
 	return false
 }
 
 // PrimesUpTo streams all the primes up to n, and closes 'out' when complete.
 // It's non-blocking.
 func (p *MemoizingPrimer) PrimesUpTo(n int, out chan<- int) {
-	go func() {
-		if n >= int(atomic.LoadInt64(&p.max)) {
-			// *May* need to compute more, so head into the write-locked section.
-			p.computeUpTo(n)
-		}
-		// We have now asserted we're caught up, so take the just-read lock.
+	p.computeUpTo(n)
+	// We have now asserted we're caught up.
 
-		p.lock.RLock()
-		defer p.lock.RUnlock()
+	go func() {
 		for _, v := range p.listed {
 			out <- v
 		}
@@ -109,11 +78,7 @@ func (p *MemoizingPrimer) PrimesUpTo(n int, out chan<- int) {
 
 // computeUpTo is a blocking call that returns once p has computed primes up to n.
 func (p *MemoizingPrimer) computeUpTo(n int) {
-	p.lock.Lock()
-	defer p.lock.Unlock()
-
 	if n < int(p.max) {
-		// Already computed (we didn't have the RWlock last time we checked.) Return immediately.
 		return
 	}
 
