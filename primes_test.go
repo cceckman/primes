@@ -56,3 +56,15 @@ func TestIsPrime(t *testing.T) {
 		}
 	}
 }
+
+func TestRegression(t *testing.T) {
+	mem := NewMemoizingPrimer()
+	for in, want := range map[int]bool {
+		1765: false,
+	} {
+		got := mem.IsPrime(in)
+		if got != want {
+			t.Errorf("for %d: got: %v want: %v", in, got, want)
+		}
+	}
+}

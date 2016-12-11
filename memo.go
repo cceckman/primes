@@ -54,17 +54,7 @@ func (p *MemoizingPrimer) IsPrime(n int) bool {
 
 	c := make(chan int)
 	p.PrimesUpTo(n, c)
-	for i := range c {
-		if i == n {
-			backgroundFlush(c)
-			return true
-		}
-		if i > n {
-			backgroundFlush(c)
-			return false
-		}
-	}
-
+	backgroundFlush(c)
 
 	/*
 	// Have already computed n; do a binary search.
