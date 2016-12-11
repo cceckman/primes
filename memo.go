@@ -70,7 +70,9 @@ func (p *MemoizingPrimer) PrimesUpTo(n int, out chan<- int) {
 
 	go func() {
 		for _, v := range p.listed {
-			out <- v
+			if v <= n {
+				out <- v
+			}
 		}
 		close(out)
 	}()
@@ -95,10 +97,10 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 	sqrt := int(math.Ceil(math.Sqrt(float64(n))))
 
 	// Start with p.max or p.max-1, whichever is odd.
-	oddMax := int(p.max) - (1 - (int(p.max) % 2))
+	oddMax := int(p.max) - 1 + (int(p.max) % 2)
 
 	// First, mark composites from already-known primes.
-	// Skip the first prime (2).
+	// Skip the first prime (2), since it isn't even in our array.
 	for _, prime := range p.listed[1:] {
 		// p.max may be composite; want to mark everything >= p.max.
 		// Start at the first multiple of prime less than or equal to p.max.
@@ -121,6 +123,7 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 			continue
 		}
 
+		// Found a new prime.
 		// run through odd multiples of i, marking as composite.
 		// Start with i * i; lower multiples of i will have already been marked as multiples
 		// of another, smaller prime. Add 2i each time to ignore the even multiples.
