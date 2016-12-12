@@ -64,11 +64,50 @@ func TestRegression(t *testing.T) {
 	if r {
 		t.Errorf("for %d: got: %v want: %v", 1683, r, false)
 	}
-
 	r = mem.IsPrime(1765)
 	if r {
 		t.Errorf("for %d: got: %v want: %v", 1765, r, false)
 	}
 
+	mem = NewMemoizingPrimer()
+	r = mem.IsPrime(11)
+	if !r {
+		t.Errorf("for %d: got: %v want: %v", 11, r, true)
+	}
+	r = mem.IsPrime(1765)
+	if r {
+		t.Errorf("for %d: got: %v want: %v", 1765, r, false)
+	}
+
+	mem = NewMemoizingPrimer()
+	r = mem.IsPrime(12)
+	if r {
+		t.Errorf("for %d: got: %v want: %v", 12, r, false)
+	}
+	r = mem.IsPrime(1765)
+	if r {
+		t.Errorf("for %d: got: %v want: %v", 1765, r, false)
+	}
+	// What we find from the above: MemoizingPrimer is wrong when it
+	// previously has an odd max. Also, note that when using only
+	// IsPrime, p.max will always be odd- PrimesUpTo doesn't get invoked
+	// from IsPrime if n is even.
+	mem = NewMemoizingPrimer()
+	c := make(chan int)
+	mem.PrimesUpTo(11, c)
+	for _ := range c {}
+	r = mem.IsPrime(1765)
+	if r {
+		t.Errorf("for %d: got: %v want: %v", 1765, r, false)
+	}
+
+	mem = NewMemoizingPrimer()
+	c = make(chan int)
+	mem.PrimesUpTo(12, c)
+	for _ := range c {}
+	r = mem.IsPrime(1765)
+	if r {
+		t.Errorf("for %d: got: %v want: %v", 1765, r, false)
+	}
 }
 
