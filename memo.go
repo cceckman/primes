@@ -9,6 +9,8 @@ package primes
 
 import(
 	"math"
+	"sync"
+	"sync/atomic"
 )
 
 var (
@@ -16,12 +18,13 @@ var (
 )
 
 // MemoizingPrimer is primer that stores found primes.
-// It is not (yet) threadsafe.
+// It is threadsafe... probably.
 type MemoizingPrimer struct {
 	// max is the largest number checked for primacy
 	max int64
 	// listing is the list of all primes found below max.
 	listed []int
+	sync.RWMutex
 }
 
 func NewMemoizingPrimer() *MemoizingPrimer {
@@ -69,6 +72,8 @@ func (p *MemoizingPrimer) PrimesUpTo(n int, out chan<- int) {
 	// We have now asserted we're caught up.
 
 	go func() {
+		p.RLock()
+		defer p.RUnlock()
 		for _, v := range p.listed {
 			if v <= n {
 				out <- v
@@ -80,6 +85,19 @@ func (p *MemoizingPrimer) PrimesUpTo(n int, out chan<- int) {
 
 // computeUpTo is a blocking call that returns once p has computed primes up to n.
 func (p *MemoizingPrimer) computeUpTo(n int) {
+	// Do an initial, atomic check of the value. If n is smaller than max, we don't even need to
+	// bother taking the (expensive) write lock.
+	if n <= int(atomic.LoadInt64(&p.max)) {
+		return
+	}
+	// We may need to compute more more; take the write lock.
+	p.Lock()
+	defer p.Unlock()
+	// Check again, now that we have the lock.
+	// Two computeUpTo threads can race to take the write lock; one may complete its computation
+	// before the other gets the lock. We do the initial, unlocked check so that we aren't taking
+	// the write lock (which blocks reads) in most cases; we double-check so that we don't overwrite
+	// existing results, or worse, go backwards in p.max.
 	if n <= int(p.max) {
 		return
 	}
