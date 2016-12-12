@@ -94,25 +94,23 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 	composite := make([]bool, (n / 2) + 1)
 	composite[0] = true  // 1 is not prime
 
-	// Only need to look for primes "less than or equal to" sqrt(n)
-	// before assuming all remaining (un-sieved) ones are prime
-	sqrt := int(math.Ceil(math.Sqrt(float64(n))))
-
-	// Start with p.max or p.max-1, whichever is odd.
-	oddMax := int(p.max) - 1 + (int(p.max) % 2)
-
 	// First, mark composites from already-known primes.
 	// Skip the first prime (2), since it isn't even in our array.
 	for _, prime := range p.listed[1:] {
-		// p.max may be composite; want to mark everything >= p.max.
-		// Start at the first multiple of prime less than or equal to p.max.
-
-		for i := oddMax - (oddMax % prime); i <= n; i += (prime * 2) {
+		// We could optimize this by starting at the first *odd* multiple of prime greater than or
+		// equal to p.max. Instead, just start at prime*prime. (All smaller multiples of prime have
+		// another prime factor, that is smaller than prime.)
+		for i := prime * prime; i <= n; i += (prime * 2) {
 			composite[(i - 1) / 2] = true
 		}
 	}
 
+	// Only need to look for primes "less than or equal to" sqrt(n)
+	// before assuming all remaining (un-sieved) ones are prime
+	sqrt := int(math.Ceil(math.Sqrt(float64(n))))
 	// Now, walk up, checking / marking composites along the way.
+	// Start with p.max or p.max-1, whichever is odd.
+	oddMax := int(p.max) - 1 + (int(p.max) % 2)
 	for i := oddMax; i <= n; i += 2 {
 		if composite[(i - 1) / 2] { // non-default; has been explicitly set to be composite.
 			continue
