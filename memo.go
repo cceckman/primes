@@ -24,7 +24,7 @@ type MemoizingPrimer struct {
 	max int64
 	// listing is the list of all primes found below max.
 	listed []int
-	sync.RWMutex
+	lock sync.RWMutex
 }
 
 func NewMemoizingPrimer() *MemoizingPrimer {
@@ -54,8 +54,8 @@ func (p *MemoizingPrimer) IsPrime(n int) bool {
 	}
 
 	// We have successfully asserted that listed includes at least up to n.
-	p.RLock()
-	defer p.RUnlock()
+	p.lock.RLock()
+	defer p.lock.RUnlock()
 
 	// Log rather than linear: binary search.
 	search := p.listed[:]
@@ -71,7 +71,6 @@ func (p *MemoizingPrimer) IsPrime(n int) bool {
 		}
 	}
 
-
 	return false
 }
 
@@ -82,9 +81,11 @@ func (p *MemoizingPrimer) PrimesUpTo(n int, out chan<- int) {
 	// We have now asserted we're caught up.
 
 	go func() {
-		p.RLock()
-		defer p.RUnlock()
-		for _, v := range p.listed {
+		p.lock.RLock()
+		curList := p.listed[:]
+		p.lock.RUnlock()
+
+		for _, v := range curList {
 			if v <= n {
 				out <- v
 			}
@@ -101,8 +102,8 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 		return
 	}
 	// We may need to compute more more; take the write lock.
-	p.Lock()
-	defer p.Unlock()
+	p.lock.Lock()
+	defer p.lock.Unlock()
 	// Check again, now that we have the lock.
 	// Two computeUpTo threads can race to take the write lock; one may complete its computation
 	// before the other gets the lock. We do the initial, unlocked check so that we aren't taking
