@@ -2,6 +2,7 @@
 package primes
 
 import (
+	"sync"
 	"reflect"
 	"testing"
 )
@@ -55,6 +56,41 @@ func TestIsPrime(t *testing.T) {
 			pointer++
 		}
 	}
+}
+
+// TestIsPrimeParallel spawns a new thread for each (i, impl) instance.
+// It gives some coverage of parallelism, though no guarantees.
+func TestIsPrimeParallel(t *testing.T) {
+	max := refPrimes[len(refPrimes)-1]
+	min := -10
+	pointer := 0 // into refPrimes
+
+	var wg sync.WaitGroup
+
+	// Probably more efficient to keep the bigger loop on the outside.
+	for i := min; i < max; i++ {
+		want := i == refPrimes[pointer]
+		for name, p := range Implementations {
+			// Idiomatic override of loop variables.
+			name := name
+			p := p
+			i := i
+			wg.Add(1)
+			go func() {
+				// i == refPrimes[pointer] means "is this prime".
+				got := p.IsPrime(i)
+				if got != want {
+					t.Errorf("Got incorrect result for Primer %s on value %v: got: %v wanted: %v",
+						name, i, got, want,
+					)
+				}
+			}()
+		}
+		if i == refPrimes[pointer] { // We've passed this prime; move to the next.
+			pointer++
+		}
+	}
+	wg.Done()
 }
 
 func TestRegression(t *testing.T) {
