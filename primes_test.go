@@ -92,10 +92,11 @@ func TestRegression(t *testing.T) {
 	// previously has an odd max. Also, note that when using only
 	// IsPrime, p.max will always be odd- PrimesUpTo doesn't get invoked
 	// from IsPrime if n is even.
+
 	mem = NewMemoizingPrimer()
 	c := make(chan int)
 	mem.PrimesUpTo(11, c)
-	for _ := range c {}
+	for _ = range c {}
 	r = mem.IsPrime(1765)
 	if r {
 		t.Errorf("for %d: got: %v want: %v", 1765, r, false)
@@ -104,10 +105,19 @@ func TestRegression(t *testing.T) {
 	mem = NewMemoizingPrimer()
 	c = make(chan int)
 	mem.PrimesUpTo(12, c)
-	for _ := range c {}
+	for _ = range c {}
 	r = mem.IsPrime(1765)
 	if r {
 		t.Errorf("for %d: got: %v want: %v", 1765, r, false)
 	}
+	// And what we find from the above... both of them fail, so it's not simply a question of p.max
+	// even/odd beforehand.
+	mem = NewMemoizingPrimer()
+	r = mem.IsPrime(1765)
+	if r {
+		t.Errorf("for %d: got: %v want: %v", 1765, r, false)
+	}
+	// But: the case above succeeds!
+
 }
 
