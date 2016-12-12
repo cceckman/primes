@@ -135,6 +135,7 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 	}
 	// Finally, update max.
 	p.max = int64(n)
+	log.Printf("max: %d listed: %v\n", p.max, p.listed)
 }
 
 
