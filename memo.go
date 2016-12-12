@@ -48,19 +48,29 @@ func (p *MemoizingPrimer) IsPrime(n int) bool {
 		return false
 	}
 
-	// Iterate through the primes and try to find it.
-	c := make(chan int)
-	p.PrimesUpTo(n, c)
-	for i := range c {
-		if i == n {
-			// Get rid of the rest of the values in the background.
-			backgroundFlush(c)
+	// Compare without taking locks, so as to not block.
+	if n > int(atomic.LoadInt64(&p.max)) {
+		p.computeUpTo(n)
+	}
+
+	// We have successfully asserted that listed includes at least up to n.
+	p.RLock()
+	defer p.RUnlock()
+
+	// Log rather than linear: binary search.
+	search := p.listed[:]
+	for len(search) > 0 {
+		mid := len(search) / 2
+		if search[mid] == n {
 			return true
+		}
+		if search[mid] > n { // search lower half
+			search = search[:mid]
+		} else if search[mid] < n { // search upper half
+			search = search[mid+1:]
 		}
 	}
 
-	// Better way: do a binary search in the list.
-	// Log rather than linear.
 
 	return false
 }
