@@ -9,7 +9,6 @@ package primes
 
 import(
 	"math"
-	"log"
 )
 
 var (
@@ -84,7 +83,6 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 	if n <= int(p.max) {
 		return
 	}
-	log.Printf("Memoizing Primer @%p: moving max from %d to %d", p, p.max, n)
 
 	// In an odds-only slice,
 	// index i refers to the number (i*2)+1;
@@ -133,7 +131,6 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 	}
 	// Finally, update max.
 	p.max = int64(n)
-	log.Printf("max: %d listed: %v\n", p.max, p.listed)
 }
 
 
