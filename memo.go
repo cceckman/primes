@@ -7,7 +7,7 @@
 
 package primes
 
-import(
+import (
 	"math"
 	"sync"
 	"sync/atomic"
@@ -24,12 +24,12 @@ type MemoizingPrimer struct {
 	max int64
 	// listing is the list of all primes found below max.
 	listed []int
-	lock sync.RWMutex
+	lock   sync.RWMutex
 }
 
 func NewMemoizingPrimer() *MemoizingPrimer {
 	p := &MemoizingPrimer{
-		max: 10,
+		max:    10,
 		listed: []int{2, 3, 5, 7},
 	}
 	return p
@@ -118,8 +118,8 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 	// number n is at index (n-1) / 2
 	// (We could use less memory by subtracting out p.max.)
 	// prime = not-composite, until proven otherwise.
-	composite := make([]bool, (n / 2) + 1)
-	composite[0] = true  // 1 is not prime
+	composite := make([]bool, (n/2)+1)
+	composite[0] = true // 1 is not prime
 
 	// First, mark composites from already-known primes.
 	// Skip the first prime (2), since it isn't even in our array.
@@ -128,7 +128,7 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 		// equal to p.max. Instead, just start at prime*prime. (All smaller multiples of prime have
 		// another prime factor, that is smaller than prime.)
 		for i := prime * prime; i <= n; i += (prime * 2) {
-			composite[(i - 1) / 2] = true
+			composite[(i-1)/2] = true
 		}
 	}
 
@@ -139,7 +139,7 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 	// Start with p.max or p.max-1, whichever is odd.
 	oddMax := int(p.max) - 1 + (int(p.max) % 2)
 	for i := oddMax; i <= n; i += 2 {
-		if composite[(i - 1) / 2] { // non-default; has been explicitly set to be composite.
+		if composite[(i-1)/2] { // non-default; has been explicitly set to be composite.
 			continue
 		}
 		// Found a prime; record it.
@@ -155,17 +155,17 @@ func (p *MemoizingPrimer) computeUpTo(n int) {
 		// Start with i * i; lower multiples of i will have already been marked as multiples
 		// of another, smaller prime. Add 2i each time to ignore the even multiples.
 		for j := i * i; j <= n; j += (i + i) {
-			composite[(j - 1) / 2] = true
+			composite[(j-1)/2] = true
 		} // end sieve
 	}
 	// Finally, update max.
 	p.max = int64(n)
 }
 
-
 // backgroundFlush starts a thread that flushes c.
 func backgroundFlush(c <-chan int) {
 	go func() {
-		for _ = range c {}
+		for _ = range c {
+		}
 	}()
 }
