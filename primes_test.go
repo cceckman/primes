@@ -154,6 +154,5 @@ func TestRegression(t *testing.T) {
 		t.Errorf("for %d: got: %v want: %v", 1765, r, false)
 	}
 	// But: the case above succeeds!
-
 }
 
