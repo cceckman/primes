@@ -58,10 +58,8 @@ func (p *DB) IsPrime(n int) bool {
 	// Ensure that we have enough in the list.
 	p.computeBeyond(n)
 
-	// Since n < p.primes[len(p.primes)-1], we don't have to
-	// check that i is a valid index.
 	i := sort.SearchInts(p.primes, n)
-	return p.primes[i] == n
+	return i < len(p.primes) && p.primes[i] == n
 }
 
 // computeBeyond is a thread-unsave blocking call that returns once p has computed a prime greater than m.
