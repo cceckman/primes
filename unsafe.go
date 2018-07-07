@@ -26,9 +26,9 @@ type Iterator struct {
 func (i *Iterator) Next() int {
 	if i.index == len(i.parent.primes) {
 		// Need to grow the list.
-		// Arbitrarily choose max^2 as the factor.
+		// Arbitrarily choose max*2 as the factor.
 		max := i.parent.primes[i.index-1]
-		i.parent.computeBeyond(max * max)
+		i.parent.computeBeyond(2 * max)
 	}
 
 	i.index +=1
